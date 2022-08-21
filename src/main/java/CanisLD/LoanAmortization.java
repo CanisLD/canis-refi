@@ -1,7 +1,12 @@
 package CanisLD;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import jdk.internal.jshell.tool.resources.version;
 
 public class LoanAmortization {
 
@@ -28,6 +33,51 @@ public class LoanAmortization {
       principal = builder.principal;
       interest = builder.interest;
       balance = builder.balance;
+    }
+    @Override
+    public String toString() {
+      return new StringBuilder("{")
+        .append("amount:").append(amount.toString()).append(",")
+        .append("principal:").append(principal.toString()).append(",")
+        .append("interest:").append(interest.toString()).append(",")
+        .append("balance:").append(balance.toString()).append(",")
+        .append("}")
+        .toString();
+    }
+    @Override
+    public boolean equals(Object other) {
+      // self check
+      if (this == other) {
+          return true;
+      }
+      // null check
+      if (other == null) {
+          return false;
+      }
+
+      // type check and cast
+      if (getClass() != other.getClass()) {
+          return false;
+      }
+
+      Payment payment = (Payment) other;
+
+      // field comparison
+      // return Objects.equals(amount, payment.amount)
+      //   && Objects.equals(principal, payment.principal)
+      //   && Objects.equals(interest, payment.interest)
+      //   && Objects.equals(balance, payment.balance);
+
+      return this.scaledEquals(payment);
+    }
+    public BigDecimal scaledValue(double value) {
+      return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_EVEN);
+    }
+    public boolean scaledEquals(Payment other) {
+      return scaledValue(amount).equals(scaledValue(other.amount))
+        && scaledValue(principal).equals(scaledValue(other.principal))
+        && scaledValue(interest).equals(scaledValue(other.interest))
+        && scaledValue(balance).equals(scaledValue(other.balance));
     }
     public static class Builder {
       private Double amount;
