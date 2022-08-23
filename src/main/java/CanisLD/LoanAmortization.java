@@ -62,12 +62,6 @@ public class LoanAmortization {
 
       Payment payment = (Payment) other;
 
-      // field comparison
-      // return Objects.equals(amount, payment.amount)
-      //   && Objects.equals(principal, payment.principal)
-      //   && Objects.equals(interest, payment.interest)
-      //   && Objects.equals(balance, payment.balance);
-
       return this.scaledEquals(payment);
     }
     public BigDecimal scaledValue(double value) {
@@ -125,7 +119,7 @@ public class LoanAmortization {
     public Long getNumberOfTems() {
       return numberOfTerms;
     }
-    private Loan(Builder builder) {
+    protected Loan(Builder builder) {
       interestRate = builder.interestRate;
       amount = builder.amount;
       paymentFrequency = builder.paymentFrequency;
@@ -208,6 +202,25 @@ public class LoanAmortization {
       .balance(Double.valueOf(outstandingLoanBalance - perPaymentPrincipal))
       .interest(Double.valueOf(amortizedPayment - perPaymentPrincipal))
       .build();
+  }
+
+  private final Loan loan;
+  private List<Payment> amortization;
+
+  public LoanAmortization(Loan loan) {
+    this.loan = loan;
+  }
+
+  public Loan getLoan() {
+    return loan;
+  }
+
+  public List<Payment> getAmortization() {
+    if (amortization == null) {
+      amortization = getAmortization(loan);
+    }
+
+    return amortization;
   }
 
   public List<Payment> getAmortization(Loan loan) {
