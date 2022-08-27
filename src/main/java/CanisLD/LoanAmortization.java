@@ -9,21 +9,21 @@ import java.util.Objects;
 public class LoanAmortization {
 
   public static class Payment {
-    private final Double amount;
-    private final Double principal;
-    private final Double interest;
-    private final Double balance;
+    private final double amount;
+    private final double principal;
+    private final double interest;
+    private final double balance;
 
-    public Double getAmount() {
+    public double getAmount() {
       return amount;
     }
-    public Double getPrincipal() {
+    public double getPrincipal() {
       return principal;
     }
-    public Double getInterest() {
+    public double getInterest() {
       return interest;
     }
-    public Double getBalance() {
+    public double getBalance() {
       return balance;
     }
     private Payment(Builder builder) {
@@ -35,10 +35,10 @@ public class LoanAmortization {
     @Override
     public String toString() {
       return new StringBuilder("{")
-        .append("amount:").append(amount.toString()).append(",")
-        .append("principal:").append(principal.toString()).append(",")
-        .append("interest:").append(interest.toString()).append(",")
-        .append("balance:").append(balance.toString()).append(",")
+        .append("amount:").append(amount).append(",")
+        .append("principal:").append(principal).append(",")
+        .append("interest:").append(interest).append(",")
+        .append("balance:").append(balance).append(",")
         .append("}")
         .toString();
     }
@@ -72,24 +72,24 @@ public class LoanAmortization {
         && scaledValue(balance).equals(scaledValue(other.balance));
     }
     public static class Builder {
-      private Double amount;
-      private Double principal;
-      private Double interest;
-      private Double balance;
+      private double amount;
+      private double principal;
+      private double interest;
+      private double balance;
 
-      public Builder amount(Double amount) {
+      public Builder amount(double amount) {
         this.amount = amount;
         return this;
       }
-      public Builder principal(Double principal) {
+      public Builder principal(double principal) {
         this.principal = principal;
         return this;
       }
-      public Builder interest(Double interest) {
+      public Builder interest(double interest) {
         this.interest = interest;
         return this;
       }
-      public Builder balance(Double balance) {
+      public Builder balance(double balance) {
         this.balance = balance;
         return this;
       }
@@ -100,21 +100,21 @@ public class LoanAmortization {
   }
 
   public static class Loan {
-    private final Double interestRate;
-    private final Double amount;
-    private final Long paymentFrequency;
-    private final Long numberOfTerms;   
+    private final double interestRate;
+    private final double amount;
+    private final long paymentFrequency;
+    private final long numberOfTerms;   
   
-    public Double getInterestRate() {
+    public double getInterestRate() {
       return interestRate;
     }
-    public Double getAmount() {
+    public double getAmount() {
       return amount;
     }
-    public Long getPaymentFrequency() {
+    public long getPaymentFrequency() {
       return paymentFrequency;
     }
-    public Long getNumberOfTems() {
+    public long getNumberOfTems() {
       return numberOfTerms;
     }
     protected Loan(Builder builder) {
@@ -124,52 +124,33 @@ public class LoanAmortization {
       numberOfTerms = builder.numberOfTerms;
     }
     public static class Builder {
-      private Double interestRate;
-      private Double amount;
-      private Long paymentFrequency;
-      private Long numberOfTerms;   
+      private double interestRate;
+      private double amount;
+      private long paymentFrequency;
+      private long numberOfTerms;   
 
-      public Builder interestRate(Double interestRate) {
+      public Builder interestRate(double interestRate) {
         this.interestRate = interestRate;
         return this;
       }
-      public Builder amount(Double amount) {
+      public Builder amount(double amount) {
         this.amount = amount;
         return this;
       }
-      public Builder paymentFrequency(Long paymentFrequency) {
+      public Builder paymentFrequency(long paymentFrequency) {
         this.paymentFrequency = paymentFrequency;
         return this;
       }
-      public Builder numberOfTerms(Long numberOfTerms) {
+      public Builder numberOfTerms(long numberOfTerms) {
         this.numberOfTerms = numberOfTerms;
         return this;
       }
-      public boolean isValid() {
-        return interestRate != null
-          && amount != null 
-          && paymentFrequency != null 
-          && numberOfTerms != null 
-          && paymentFrequency.longValue() > 0
-          && numberOfTerms.longValue() > 0;
-      }
       public Loan build() {
-        if (!isValid()) {
-          throw new RuntimeException("Loan data missing critical values");
-        }
         return new Loan(this);
       }
     }
   }
 
-  public double calcPerPaymentInterestRate(double interestRate, double paymentFrequency) {
-    return interestRate / paymentFrequency;
-  }
-
-  public long calcTotalNumberOfPayments(long paymentFrequency, long numberOfTerms) {
-    return paymentFrequency * numberOfTerms;
-  }
-  
   public double calcPerPaymentPrincipal(
     double payment,
     double outstandingLoanBalance,
@@ -195,10 +176,10 @@ public class LoanAmortization {
   ) {
     double perPaymentPrincipal = calcPerPaymentPrincipal(amortizedPayment, outstandingLoanBalance, perPaymentInterestRate);
     return new Payment.Builder()
-      .amount(Double.valueOf(amortizedPayment))
-      .principal(Double.valueOf(perPaymentPrincipal))
-      .balance(Double.valueOf(outstandingLoanBalance - perPaymentPrincipal))
-      .interest(Double.valueOf(amortizedPayment - perPaymentPrincipal))
+      .amount(amortizedPayment)
+      .principal(perPaymentPrincipal)
+      .balance(outstandingLoanBalance - perPaymentPrincipal)
+      .interest(amortizedPayment - perPaymentPrincipal)
       .build();
   }
 
@@ -223,12 +204,12 @@ public class LoanAmortization {
 
   public List<Payment> getAmortization(Loan loan) {
 
-    final double interestRate = loan.getInterestRate().doubleValue();
-    final double loanAmount = loan.getAmount().doubleValue();
+    final double interestRate = loan.getInterestRate();
+    final double loanAmount = loan.getAmount();
     final long paymentFrequency = loan.getPaymentFrequency();
     final long numberOfTerms = loan.getNumberOfTems();
-    final long totalNumberOfPayments = calcTotalNumberOfPayments(paymentFrequency, numberOfTerms);
-    final double perPaymentInterestRate = calcPerPaymentInterestRate(interestRate, paymentFrequency);
+    final long totalNumberOfPayments = paymentFrequency * numberOfTerms;
+    final double perPaymentInterestRate = interestRate / paymentFrequency;
     final double amortizedPayment = calcAmortizedPayment(loanAmount, perPaymentInterestRate, totalNumberOfPayments);
 
     final ArrayList<Payment> amortizedPaymentList = new ArrayList<>();
@@ -236,7 +217,7 @@ public class LoanAmortization {
     for (int i = 0; i < totalNumberOfPayments; i++) {
       final Payment payment = getPaymentInstallation(amortizedPayment, outstandingLoanBalance, perPaymentInterestRate);
       amortizedPaymentList.add(payment);
-      outstandingLoanBalance = payment.getBalance().doubleValue();
+      outstandingLoanBalance = payment.getBalance();
     }
 
     return amortizedPaymentList;
