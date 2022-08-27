@@ -70,13 +70,13 @@ public class FinanceProjection {
     private final String label;
       
     // the starting period for finance segment
-    private final Long start;
+    private final long start;
 
     // the ending period for finance segment
-    private final Long end;
+    private final long end;
 
     // upfront const on securing the loans. fees, points, etc.
-    private final Double cost;
+    private final double cost;
 
     // amortized loan
     private final LoanAmortization.Loan loanDetails;
@@ -84,13 +84,13 @@ public class FinanceProjection {
     public String getLabel() {
       return label;
     }
-    public Long getStart() {
+    public long getStart() {
       return start;
     }
-    public Long getEnd() {
+    public long getEnd() {
       return end;
     }
-    public Double getCost() {
+    public double getCost() {
       return cost;
     }
     public LoanAmortization.Loan getLoanAmortizationDetails() {
@@ -108,24 +108,24 @@ public class FinanceProjection {
     public static class Builder {
       
       private String label;
-      private Long start;
-      private Long end;
-      private Double cost;
+      private long start;
+      private long end;
+      private double cost;
       private LoanAmortization.Loan loanDetails;
 
       public Builder label(String label) {
         this.label = label;
         return this;
       }
-      public Builder start(Long start) {
+      public Builder start(long start) {
         this.start = start;
         return this;
       }
-      public Builder end(Long end) {
+      public Builder end(long end) {
         this.end = end;
         return this;
       }
-      public Builder cost(Double cost) {
+      public Builder cost(double cost) {
         this.cost = cost;
         return this;
       }
