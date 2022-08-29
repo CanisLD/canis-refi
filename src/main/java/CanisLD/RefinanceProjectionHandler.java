@@ -4,8 +4,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+// import com.google.gson.Gson;
+// import com.google.gson.GsonBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class RefinanceProjectionHandler implements RequestHandler<RefinanceProjectionRequest, RefinanceProjectionResponse> {
   
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  // private Gson gson = new GsonBuilder().setPrettyPrinting().create();
   
   @Override
   public RefinanceProjectionResponse handleRequest(RefinanceProjectionRequest event, Context context)
@@ -27,11 +27,16 @@ public class RefinanceProjectionHandler implements RequestHandler<RefinanceProje
     // logger.log("EVENT: " + gson.toJson(event));
     // logger.log("EVENT TYPE: " + event.getClass());
 
-    final List<FinanceProjection.Loan> loans = Collections.emptyList();
-    FinanceProjection financeProjection = new FinanceProjection(loans);
+    final List<FinanceProjection.Loan> withRefinanceLoans = List.of(
+      event.getCurrentLoan(),
+      event.getRefinanceLoan()
+    );
+    FinanceProjection projection = new FinanceProjection(withRefinanceLoans);
 
     RefinanceProjectionResponse response = 
       new RefinanceProjectionResponse.Builder()
+        .currentLoanProjection(projection.getProjectedPaymentAccumulationOnIndividualLoan(event.getCurrentLoan().getLabel()))
+        .refinanceLoanProjection(projection.getProjectedPaymentAccumulation())
         .build();
     return response;
   }

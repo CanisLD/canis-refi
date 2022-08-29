@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -141,23 +142,37 @@ public class FinanceProjection {
 
   private final List<Loan> loans;
 
+  private final Map<String, Loan> loansByLabel;
+
   private final Map<String, LoanAmortization> loanAmortizations;
 
   private List<LoanAmortization.Payment> projectedPayments;
 
   private List<PaymentAccumulator> projectedPaymentAccumulation;
 
+  private Map<String, List<PaymentAccumulator>> projectedPaymentAccumulationOnIndividualLoans;
+
   public FinanceProjection(List<Loan> loans) {
     this.loans = loans;
+    this.loansByLabel =
+      loans.stream()
+        .collect(Collectors.toMap(
+          loan -> loan.getLabel(),
+          loan -> loan
+        ));
     this.loanAmortizations = 
       loans.stream()
-           .collect(Collectors.toMap(
-                      loan -> loan.getLabel(), 
-                      loan -> new LoanAmortization(loan.getLoanAmortizationDetails())));
+        .collect(Collectors.toMap(
+          loan -> loan.getLabel(),
+          loan -> new LoanAmortization(loan.getLoanAmortizationDetails())));
   }
 
   public List<Loan> getLoans() {
     return loans;
+  }
+
+  public Loan getLoan(String label) {
+    return loansByLabel.get(label);
   }
 
   public Map<String, LoanAmortization> getLoanAmortizations() {
@@ -174,6 +189,33 @@ public class FinanceProjection {
     }
 
     return this.projectedPayments;
+  }
+
+  public List<PaymentAccumulator> getProjectedPaymentAccumulationOnIndividualLoan(String loanLabel) {
+    if (projectedPaymentAccumulationOnIndividualLoans == null) {
+      projectedPaymentAccumulationOnIndividualLoans = new HashMap<>();
+    }
+
+    return projectedPaymentAccumulationOnIndividualLoans.computeIfAbsent(loanLabel, (label) -> {
+      final PaymentAccumulator accumulator =
+        new PaymentAccumulator.Builder()
+          .amount(BigDecimal.ZERO)
+          .principal(BigDecimal.ZERO)
+          .interest(BigDecimal.ZERO)
+          .build();
+      final Loan loan = loansByLabel.get(label);
+      final List<LoanAmortization.Payment> projectedPayments = loanAmortizations.get(loan.getLabel()).getAmortization();
+      return projectedPayments.stream()
+        .map(payment -> {
+          accumulator.addPayment(payment);
+          return new PaymentAccumulator.Builder()
+                                .amount(accumulator.getAmount())
+                                .principal(accumulator.getPrincipal())
+                                .interest(accumulator.getInterest())
+                                .build();
+        })
+        .collect(Collectors.toList());
+    });
   }
 
   public List<PaymentAccumulator> getProjectedPaymentAccumulation() {
