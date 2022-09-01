@@ -11,12 +11,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class FinanceProjection {
 
   public static class PaymentAccumulator {
     
+    @JsonProperty("amount")
     private BigDecimal amount;
+
+    @JsonProperty("principal")
     private BigDecimal principal;
+
+    @JsonProperty("interest")
     private BigDecimal interest;
 
     public PaymentAccumulator addPayment(LoanAmortization.Payment payment) {
@@ -68,33 +75,60 @@ public class FinanceProjection {
   public static class Loan {
 
     // name of this loan
-    private final String label;
+    @JsonProperty("label")
+    private String label;
       
     // the starting period for finance segment
-    private final long start;
+    @JsonProperty("start")
+    private long start;
 
     // the ending period for finance segment
-    private final long end;
+    @JsonProperty("end")
+    private long end;
 
     // upfront const on securing the loans. fees, points, etc.
-    private final double cost;
+    @JsonProperty("cost")
+    private double cost;
 
     // amortized loan
-    private final LoanAmortization.Loan loanDetails;
+    @JsonProperty("loanDetails")
+    private LoanAmortization.Loan loanDetails;
   
+    public Loan() {}
+
+    public Loan setLabel(String label) {
+      this.label = label;
+      return this;
+    }
     public String getLabel() {
       return label;
+    }
+    public Loan setStart(long start) {
+      this.start = start;
+      return this;
     }
     public long getStart() {
       return start;
     }
+    public Loan setEnd(long end) {
+      this.end = end;
+      return this;
+    }
     public long getEnd() {
       return end;
+    }
+    public Loan setCost(double cost) {
+      this.cost = cost;
+      return this;
     }
     public double getCost() {
       return cost;
     }
-    public LoanAmortization.Loan getLoanAmortizationDetails() {
+    public Loan setLoanDetails(LoanAmortization.Loan loanDetails) {
+      this.loanDetails = loanDetails;
+      return this;
+    }
+    public LoanAmortization.Loan getLoanDetails() {
       return loanDetails;
     }
 
@@ -164,7 +198,7 @@ public class FinanceProjection {
       loans.stream()
         .collect(Collectors.toMap(
           loan -> loan.getLabel(),
-          loan -> new LoanAmortization(loan.getLoanAmortizationDetails())));
+          loan -> new LoanAmortization(loan.getLoanDetails())));
   }
 
   public List<Loan> getLoans() {

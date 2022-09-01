@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class LoanAmortization {
 
   public static class Payment {
@@ -100,19 +102,45 @@ public class LoanAmortization {
   }
 
   public static class Loan {
-    private final double interestRate;
-    private final double amount;
-    private final long paymentFrequency;
-    private final long numberOfTerms;   
-  
+
+    @JsonProperty("interestRate")
+    private double interestRate;
+
+    @JsonProperty("amount")
+    private double amount;
+
+    @JsonProperty("paymentFrequency")
+    private long paymentFrequency;
+
+    @JsonProperty("numberOfTerms")
+    private long numberOfTerms;
+
+    public Loan() {}
+
+    public Loan setInterestRate(double interestRate) {
+      this.interestRate = interestRate;
+      return this;
+    }
     public double getInterestRate() {
       return interestRate;
+    }
+    public Loan setAmount(double amount) {
+      this.amount = amount;
+      return this;
     }
     public double getAmount() {
       return amount;
     }
+    public Loan setPaymentFrequency(long paymentFrequency) {
+      this.paymentFrequency = paymentFrequency;
+      return this;
+    }
     public long getPaymentFrequency() {
       return paymentFrequency;
+    }
+    public Loan setNumberOfTerms(long numberOfTerms) {
+      this.numberOfTerms = numberOfTerms;
+      return this;
     }
     public long getNumberOfTems() {
       return numberOfTerms;

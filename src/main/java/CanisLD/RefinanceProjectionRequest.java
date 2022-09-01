@@ -1,19 +1,28 @@
 package CanisLD;
 
-public class RefinanceProjectionRequest {
-  private final FinanceProjection.Loan currentLoan;
-  private final FinanceProjection.Loan refinanceLoan;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-  // public RefinanceProjectionRequest setCurrentLoan(FinanceProjection.Loan currentLoan) {
-  //   this.currentLoan = currentLoan;
-  //   return this;
-  // }
-  // public RefinanceProjectionRequest setRefinanceLoan(FinanceProjection.Loan refinanceLoan) {
-  //   this.refinanceLoan = refinanceLoan;
-  //   return this;
-  // }
+public class RefinanceProjectionRequest {
+  
+  @JsonProperty("currentLoan")
+  private FinanceProjection.Loan currentLoan;
+
+  @JsonProperty("refinanceLoan")
+  private FinanceProjection.Loan refinanceLoan;
+
+
+  public RefinanceProjectionRequest() {}
+
+  public RefinanceProjectionRequest setCurrentLoan(FinanceProjection.Loan currentLoan) {
+    this.currentLoan = currentLoan;
+    return this;
+  }
   public FinanceProjection.Loan getCurrentLoan() {
     return currentLoan;
+  }
+  public RefinanceProjectionRequest setRefinanceLoan(FinanceProjection.Loan refinanceLoan) {
+    this.refinanceLoan = refinanceLoan;
+    return this;
   }
   public FinanceProjection.Loan getRefinanceLoan() {
     return refinanceLoan;
