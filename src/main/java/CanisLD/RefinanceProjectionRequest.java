@@ -14,7 +14,7 @@ public class RefinanceProjectionRequest {
   private long takeNth;
 
   public RefinanceProjectionRequest() {
-    takeNth = 1L;
+    takeNth = FinanceProjection.DEFAULT_TAKE_NTH;
   }
 
   public RefinanceProjectionRequest setCurrentLoan(FinanceProjection.Loan currentLoan) {
@@ -51,7 +51,7 @@ public class RefinanceProjectionRequest {
     private long takeNth;
 
     public Builder() {
-      takeNth = 1L;
+      takeNth = FinanceProjection.DEFAULT_TAKE_NTH;
     }
     public Builder currentLoan(FinanceProjection.Loan currentLoan) {
       this.currentLoan = currentLoan;
