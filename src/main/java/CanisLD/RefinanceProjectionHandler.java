@@ -35,8 +35,8 @@ public class RefinanceProjectionHandler implements RequestHandler<RefinanceProje
 
     RefinanceProjectionResponse response = 
       new RefinanceProjectionResponse.Builder()
-        .currentLoanProjection(projection.getProjectedPaymentAccumulationOnIndividualLoan(event.getCurrentLoan().getLabel()))
-        .refinanceLoanProjection(projection.getProjectedPaymentAccumulation())
+        .currentLoanProjection(projection.getProjectedPaymentAccumulationOnIndividualLoan(event.getCurrentLoan().getLabel(), event.getTakeNth()))
+        .refinanceLoanProjection(projection.getProjectedPaymentAccumulation(event.getTakeNth()))
         .build();
     return response;
   }

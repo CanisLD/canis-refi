@@ -10,8 +10,12 @@ public class RefinanceProjectionRequest {
   @JsonProperty("refinanceLoan")
   private FinanceProjection.Loan refinanceLoan;
 
+  @JsonProperty("takeNth")
+  private long takeNth;
 
-  public RefinanceProjectionRequest() {}
+  public RefinanceProjectionRequest() {
+    takeNth = 1L;
+  }
 
   public RefinanceProjectionRequest setCurrentLoan(FinanceProjection.Loan currentLoan) {
     this.currentLoan = currentLoan;
@@ -27,14 +31,24 @@ public class RefinanceProjectionRequest {
   public FinanceProjection.Loan getRefinanceLoan() {
     return refinanceLoan;
   }
+  public RefinanceProjectionRequest setTakeNth(long takeNth) {
+    this.takeNth = takeNth;
+    return this;
+  }
+  public long getTakeNth() {
+    return takeNth;
+  }
+  
   private RefinanceProjectionRequest(Builder builder) {
     this.currentLoan = builder.currentLoan;
     this.refinanceLoan = builder.refinanceLoan;
+    this.takeNth = builder.takeNth;
   }
 
   public static class Builder {
     private FinanceProjection.Loan currentLoan;
     private FinanceProjection.Loan refinanceLoan;
+    private long takeNth;
 
     public Builder currentLoan(FinanceProjection.Loan currentLoan) {
       this.currentLoan = currentLoan;
@@ -42,6 +56,10 @@ public class RefinanceProjectionRequest {
     }
     public Builder refinanceLoan(FinanceProjection.Loan refinanceLoan) {
       this.refinanceLoan = refinanceLoan;
+      return this;
+    }
+    public Builder takeNth(long takeNth) {
+      this.takeNth = takeNth;
       return this;
     }
     public RefinanceProjectionRequest build() {

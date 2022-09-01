@@ -9,11 +9,33 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FinanceProjection {
+
+  public static final long DEFAULT_TAKE_NTH = 1L;
+
+  /**
+   * encapsulate the counter and 
+   * faster predicate than using modulo.
+   */
+  public static class TakeNth<T> implements Predicate<T> {
+    private long index;
+    private long nth;
+
+    public TakeNth(long nth) {
+      this.nth = nth;
+      this.index = 1;
+    }
+    @Override
+    public boolean test(T ignore) {
+      index = index == nth ? 1 : index + 1;
+      return index == 1;
+    }
+  }
 
   public static class PaymentAccumulator {
     
@@ -226,6 +248,10 @@ public class FinanceProjection {
   }
 
   public List<PaymentAccumulator> getProjectedPaymentAccumulationOnIndividualLoan(String loanLabel) {
+    return getProjectedPaymentAccumulationOnIndividualLoan(loanLabel, DEFAULT_TAKE_NTH);
+  }
+
+  public List<PaymentAccumulator> getProjectedPaymentAccumulationOnIndividualLoan(String loanLabel, long takeNth) {
     if (projectedPaymentAccumulationOnIndividualLoans == null) {
       projectedPaymentAccumulationOnIndividualLoans = new HashMap<>();
     }
@@ -239,7 +265,9 @@ public class FinanceProjection {
           .build();
       final Loan loan = loansByLabel.get(label);
       final List<LoanAmortization.Payment> projectedPayments = loanAmortizations.get(loan.getLabel()).getAmortization();
+      final TakeNth<LoanAmortization.Payment> filterOnNth = new TakeNth<>(takeNth);
       return projectedPayments.stream()
+        .filter(filterOnNth)
         .map(payment -> {
           accumulator.addPayment(payment);
           return new PaymentAccumulator.Builder()
@@ -253,6 +281,10 @@ public class FinanceProjection {
   }
 
   public List<PaymentAccumulator> getProjectedPaymentAccumulation() {
+    return getProjectedPaymentAccumulation(DEFAULT_TAKE_NTH);
+  }
+
+  public List<PaymentAccumulator> getProjectedPaymentAccumulation(long takeNth) {
     if (projectedPaymentAccumulation == null) {
       final PaymentAccumulator accumulator = 
         new PaymentAccumulator.Builder()
@@ -261,8 +293,10 @@ public class FinanceProjection {
           .interest(BigDecimal.ZERO)
           .build();
       final List<LoanAmortization.Payment> projectedPayments = getProjectedPayments();
+      final TakeNth<LoanAmortization.Payment> filterOnNth = new TakeNth<>(takeNth);
       this.projectedPaymentAccumulation =
         projectedPayments.stream()
+          .filter(filterOnNth)
           .map(payment -> {
             accumulator.addPayment(payment);
             return new PaymentAccumulator.Builder()
