@@ -38,7 +38,7 @@ public class RefinanceProjectionRequest {
   public long getTakeNth() {
     return takeNth;
   }
-  
+
   private RefinanceProjectionRequest(Builder builder) {
     this.currentLoan = builder.currentLoan;
     this.refinanceLoan = builder.refinanceLoan;
@@ -50,6 +50,9 @@ public class RefinanceProjectionRequest {
     private FinanceProjection.Loan refinanceLoan;
     private long takeNth;
 
+    public Builder() {
+      takeNth = 1L;
+    }
     public Builder currentLoan(FinanceProjection.Loan currentLoan) {
       this.currentLoan = currentLoan;
       return this;
