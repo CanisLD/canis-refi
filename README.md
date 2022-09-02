@@ -52,3 +52,44 @@ curl -X POST "http://localhost:9000/2015-03-31/functions/function/invocations" \
 }
 BODY
 ```
+
+test serverless API GateWay Set up.
+
+`https://zchwjei8rc.execute-api.us-west-1.amazonaws.com/beta/loans`
+
+```
+curl -X POST "https://zchwjei8rc.execute-api.us-west-1.amazonaws.com/beta/loans" \
+-H 'Content-Type: application/json; charset=utf-8' -d @- <<BODY
+{ 
+  "takeNth": 12,
+  "currentLoan":
+  {
+    "label": "Original Loan A",
+    "start": 0,
+    "end": 70,
+    "cost": 0.00,
+    "loanDetails":
+    {
+      "amount": 500000,
+      "interestRate": 0.035,
+      "paymentFrequency": 12,
+      "numberOfTerms": 30
+    }
+  }, 
+  "refinanceLoan": 
+  {
+    "label":"Refinance Loan B",
+    "start": 70,
+    "end": 430,
+    "cost": 0.00,
+    "loanDetails":
+    {
+      "amount": 440000,
+      "interestRate": 0.03, 
+      "paymentFrequency": 12,
+      "numberOfTerms": 30
+    }
+  } 
+}
+BODY
+```
