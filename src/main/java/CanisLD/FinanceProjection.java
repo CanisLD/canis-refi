@@ -265,9 +265,8 @@ public class FinanceProjection {
           .build();
       final Loan loan = loansByLabel.get(label);
       final List<LoanAmortization.Payment> projectedPayments = loanAmortizations.get(loan.getLabel()).getAmortization();
-      final TakeNth<LoanAmortization.Payment> filterOnNth = new TakeNth<>(takeNth);
+      final TakeNth<PaymentAccumulator> filterOnNth = new TakeNth<>(takeNth);
       return projectedPayments.stream()
-        .filter(filterOnNth)
         .map(payment -> {
           accumulator.addPayment(payment);
           return new PaymentAccumulator.Builder()
@@ -276,6 +275,7 @@ public class FinanceProjection {
                                 .interest(accumulator.getInterest())
                                 .build();
         })
+        .filter(filterOnNth)
         .collect(Collectors.toList());
     });
   }
@@ -293,10 +293,9 @@ public class FinanceProjection {
           .interest(BigDecimal.ZERO)
           .build();
       final List<LoanAmortization.Payment> projectedPayments = getProjectedPayments();
-      final TakeNth<LoanAmortization.Payment> filterOnNth = new TakeNth<>(takeNth);
+      final TakeNth<PaymentAccumulator> filterOnNth = new TakeNth<>(takeNth);
       this.projectedPaymentAccumulation =
         projectedPayments.stream()
-          .filter(filterOnNth)
           .map(payment -> {
             accumulator.addPayment(payment);
             return new PaymentAccumulator.Builder()
@@ -305,6 +304,7 @@ public class FinanceProjection {
                                   .interest(accumulator.getInterest())
                                   .build();
           })
+          .filter(filterOnNth)
           .collect(Collectors.toList());
     }
 
