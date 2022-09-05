@@ -2,9 +2,6 @@ package CanisLD;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +34,28 @@ public class FinanceProjection {
     }
   }
 
+  public static class CostChecker {
+    private long index;
+    private Loan currentLoan;
+    private final Iterator<Loan> loansIterator;    
+
+    public CostChecker(List<Loan> loans) {
+      loansIterator = loans.iterator();
+      currentLoan = loansIterator.hasNext() ? loansIterator.next() : null;
+      index = 0;
+    }
+
+    public double getCost() {
+      double cost = 0.0;
+      if (currentLoan != null && currentLoan.getStart() == index) {
+        cost = currentLoan.getCost();
+        currentLoan = loansIterator.hasNext() ? loansIterator.next() : null;
+      }
+      index++;
+      return cost;
+    }
+  }
+
   public static class PaymentAccumulator {
     
     @JsonProperty("amount")
@@ -48,10 +67,11 @@ public class FinanceProjection {
     @JsonProperty("interest")
     private BigDecimal interest;
 
-    public PaymentAccumulator addPayment(LoanAmortization.Payment payment) {
-      amount = amount.add(BigDecimal.valueOf(payment.getAmount()).setScale(2, RoundingMode.HALF_EVEN));
-      principal = principal.add(BigDecimal.valueOf(payment.getPrincipal()).setScale(2, RoundingMode.HALF_EVEN));
-      interest = interest.add(BigDecimal.valueOf(payment.getInterest()).setScale(2, RoundingMode.HALF_EVEN));
+
+    public PaymentAccumulator accumulate(double amount, double principal, double interest) {
+      this.amount = this.amount.add(BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_EVEN));
+      this.principal = this.principal.add(BigDecimal.valueOf(principal).setScale(2, RoundingMode.HALF_EVEN));
+      this.interest = this.interest.add(BigDecimal.valueOf(interest).setScale(2, RoundingMode.HALF_EVEN));
       return this;
     }
 
@@ -266,9 +286,10 @@ public class FinanceProjection {
       final Loan loan = loansByLabel.get(label);
       final List<LoanAmortization.Payment> projectedPayments = loanAmortizations.get(loan.getLabel()).getAmortization();
       final TakeNth<PaymentAccumulator> filterOnNth = new TakeNth<>(takeNth);
+      final CostChecker costChecker = new CostChecker(List.of(loansByLabel.get(loan.getLabel())));
       return projectedPayments.stream()
         .map(payment -> {
-          accumulator.addPayment(payment);
+          accumulator.accumulate(payment.getAmount() + costChecker.getCost(), payment.getPrincipal(), payment.getInterest());
           return new PaymentAccumulator.Builder()
                                 .amount(accumulator.getAmount())
                                 .principal(accumulator.getPrincipal())
@@ -294,10 +315,11 @@ public class FinanceProjection {
           .build();
       final List<LoanAmortization.Payment> projectedPayments = getProjectedPayments();
       final TakeNth<PaymentAccumulator> filterOnNth = new TakeNth<>(takeNth);
+      final CostChecker costChecker = new CostChecker(loans);
       this.projectedPaymentAccumulation =
         projectedPayments.stream()
           .map(payment -> {
-            accumulator.addPayment(payment);
+            accumulator.accumulate(payment.getAmount() + costChecker.getCost(), payment.getPrincipal(), payment.getInterest());
             return new PaymentAccumulator.Builder()
                                   .amount(accumulator.getAmount())
                                   .principal(accumulator.getPrincipal())

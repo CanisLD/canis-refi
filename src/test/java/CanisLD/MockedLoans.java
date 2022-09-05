@@ -3,7 +3,6 @@ package CanisLD;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Map;
 
 public class MockedLoans {
   public static final String LOAN_A = "Loan A";
@@ -29,7 +28,7 @@ public class MockedLoans {
         .label(LOAN_B)
         .start(69L)
         .end(430L)
-        .cost(0.0)
+        .cost(5000.0)
         .loanDetails(
           new LoanAmortization.Loan.Builder()
           .amount(440000.00)
@@ -78,6 +77,6 @@ public class MockedLoans {
 
   
   // total cost.
-  public static final BigDecimal TOTAL = BigDecimal.valueOf(2245.22 * 69 + 1855.06 * 360).setScale(2, RoundingMode.HALF_EVEN);
-  public static final BigDecimal TOTAL_ON_LOAN_A = BigDecimal.valueOf(2245.22 * 360).setScale(2, RoundingMode.HALF_EVEN);  
+  public static final BigDecimal TOTAL = BigDecimal.valueOf(2245.22 * 69 + 1855.06 * 360 + 4000.0 + 5000.0).setScale(2, RoundingMode.HALF_EVEN);
+  public static final BigDecimal TOTAL_ON_LOAN_A = BigDecimal.valueOf(2245.22 * 360 + 4000.0).setScale(2, RoundingMode.HALF_EVEN);
 }

@@ -71,7 +71,7 @@ public class LoanAmortizationTest
 
     // test final balance value
     LoanAmortization.Payment lastPayment = payments.get(payments.size() - 1);
-    assertTrue(lastPayment.scaledValue(lastPayment.getBalance()).equals(BigDecimal.valueOf(0).setScale(2)));
+    assertTrue(lastPayment.scaledValue(lastPayment.getBalance()).equals(BigDecimal.ZERO.setScale(2)));
 
     // test first few amortization values.
     for (int index = 0; index < expectedLoanAmortization.size(); index++) {

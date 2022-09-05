@@ -23,12 +23,12 @@ public class RefinanceProjectionHandlerTest {
     final RefinanceProjectionResponse response = handler.handleRequest(request, null);
     assertTrue(response != null);
 
-    final List<FinanceProjection.PaymentAccumulator> accumulatedPaymentsOnCurrentLoan = response.getCurrentLoanProjection();
-    final BigDecimal totalOnCurrentLoan = accumulatedPaymentsOnCurrentLoan.get(accumulatedPaymentsOnCurrentLoan.size() - 1).getAmount();
-    assertTrue(MockedLoans.TOTAL_ON_LOAN_A.equals(totalOnCurrentLoan));
-
     List<FinanceProjection.PaymentAccumulator> accumulatedPayements = response.getRefinanceLoanProjection();
     final BigDecimal total = accumulatedPayements.get(accumulatedPayements.size() - 1).getAmount();
     assertTrue(MockedLoans.TOTAL.equals(total));
+
+    final List<FinanceProjection.PaymentAccumulator> accumulatedPaymentsOnCurrentLoan = response.getCurrentLoanProjection();
+    final BigDecimal totalOnCurrentLoan = accumulatedPaymentsOnCurrentLoan.get(accumulatedPaymentsOnCurrentLoan.size() - 1).getAmount();
+    assertTrue(MockedLoans.TOTAL_ON_LOAN_A.equals(totalOnCurrentLoan));
   }
 }
