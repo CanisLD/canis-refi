@@ -8,20 +8,21 @@ public class MockedLoans {
   public static final String LOAN_A = "Loan A";
   public static final String LOAN_B = "Loan B";
 
+  public static final LoanAmortization.Loan SAMPLE_LOAN_DETAILS_A =
+    new LoanAmortization.Loan.Builder()
+    .amount(500000.00)
+    .interestRate(0.035)
+    .paymentFrequency(12L)
+    .numberOfTerms(30L)
+    .build();
+
   public static final FinanceProjection.Loan SAMPLE_LOAN_A =
     new FinanceProjection.Loan.Builder()
     .label(LOAN_A)
     .start(0L)
     .end(69L)
     .cost(4000.00)
-    .loanDetails(
-      new LoanAmortization.Loan.Builder()
-        .amount(500000.00)
-        .interestRate(0.035)
-        .paymentFrequency(12L)
-        .numberOfTerms(30L)
-        .build()
-    )
+    .loanDetails(SAMPLE_LOAN_DETAILS_A)
     .build();
   
   public static final FinanceProjection.Loan SAMPLE_LOAN_B =
@@ -41,6 +42,39 @@ public class MockedLoans {
   .build();
 
   public static final List<FinanceProjection.Loan> SAMPLE_LOANS = List.of(SAMPLE_LOAN_A, SAMPLE_LOAN_B);
+
+  // show only the first few.
+  public static final List<LoanAmortization.Payment> EXPECTED_PAYEMENTS_HEAD =
+    List.of(new LoanAmortization.Payment.Builder()
+                .amount(2245.22)
+                .principal(786.89)
+                .interest(1458.33)
+                .balance(499213.11)
+                .build(),
+            new LoanAmortization.Payment.Builder()
+                .amount(2245.22)
+                .principal(789.19)
+                .interest(1456.04)
+                .balance(498423.92)
+                .build(),
+            new LoanAmortization.Payment.Builder()
+                .amount(2245.22)
+                .principal(791.49)
+                .interest(1453.74)
+                .balance(497632.44)
+                .build(),
+            new LoanAmortization.Payment.Builder()
+                .amount(2245.22)
+                .principal(793.80)
+                .interest(1451.43)
+                .balance(496838.64)
+                .build(),
+            new LoanAmortization.Payment.Builder()
+                .amount(2245.22)
+                .principal(796.11)
+                .interest(1449.11)
+                .balance(496042.53)
+                .build());
     
   // 2 before transition payment, and two after
   public static final int START = 67;
