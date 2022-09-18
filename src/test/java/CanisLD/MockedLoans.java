@@ -8,37 +8,39 @@ public class MockedLoans {
   public static final String LOAN_A = "Loan A";
   public static final String LOAN_B = "Loan B";
 
-  public static final List<FinanceProjection.Loan> SAMPLE_LOANS = 
-    List.of(
-      new FinanceProjection.Loan.Builder()
-        .label(LOAN_A)
-        .start(0L)
-        .end(69L)
-        .cost(4000.00)
-        .loanDetails(
-          new LoanAmortization.Loan.Builder()
-            .amount(500000.00)
-            .interestRate(0.035)
-            .paymentFrequency(12L)
-            .numberOfTerms(30L)
-            .build()
-        )
-        .build(),
-      new FinanceProjection.Loan.Builder()
-        .label(LOAN_B)
-        .start(69L)
-        .end(430L)
-        .cost(5000.0)
-        .loanDetails(
-          new LoanAmortization.Loan.Builder()
-          .amount(440000.00)
-          .interestRate(0.03)
-          .paymentFrequency(12L)
-          .numberOfTerms(30L)
-          .build()
-        )
+  public static final FinanceProjection.Loan SAMPLE_LOAN_A =
+    new FinanceProjection.Loan.Builder()
+    .label(LOAN_A)
+    .start(0L)
+    .end(69L)
+    .cost(4000.00)
+    .loanDetails(
+      new LoanAmortization.Loan.Builder()
+        .amount(500000.00)
+        .interestRate(0.035)
+        .paymentFrequency(12L)
+        .numberOfTerms(30L)
+        .build()
+    )
+    .build();
+  
+  public static final FinanceProjection.Loan SAMPLE_LOAN_B =
+    new FinanceProjection.Loan.Builder()
+    .label(LOAN_B)
+    .start(69L)
+    .end(430L)
+    .cost(5000.0)
+    .loanDetails(
+      new LoanAmortization.Loan.Builder()
+      .amount(440000.00)
+      .interestRate(0.03)
+      .paymentFrequency(12L)
+      .numberOfTerms(30L)
       .build()
-    );
+    )
+  .build();
+
+  public static final List<FinanceProjection.Loan> SAMPLE_LOANS = List.of(SAMPLE_LOAN_A, SAMPLE_LOAN_B);
     
   // 2 before transition payment, and two after
   public static final int START = 67;

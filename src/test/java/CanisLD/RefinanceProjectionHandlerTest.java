@@ -1,26 +1,35 @@
 package CanisLD;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
-import java.util.Map;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-
 public class RefinanceProjectionHandlerTest {
-  
+
   @Test
   public void testRefinanceProjectionHandler() {
+
+    LambdaLogger mockedLogger = Mockito.mock(LambdaLogger.class);
+    Context mockedContext = Mockito.mock(Context.class);
+    Mockito.when(mockedContext.getLogger()).thenReturn(mockedLogger);
 
     final RefinanceProjectionHandler handler = new RefinanceProjectionHandler();
     final RefinanceProjectionRequest request = 
       new RefinanceProjectionRequest.Builder()
-        .currentLoan(MockedLoans.SAMPLE_LOANS.get(0))
-        .refinanceLoan(MockedLoans.SAMPLE_LOANS.get(1))
+        .currentLoan(MockedLoans.SAMPLE_LOAN_A)
+        .refinanceLoan(MockedLoans.SAMPLE_LOAN_B)
         .build();
-    final RefinanceProjectionResponse response = handler.handleRequest(request, null);
+
+    assertTrue(request.validate() == RefinanceProjectionRequest.ValidationStatusCode.OK);
+    
+    final RefinanceProjectionResponse response = handler.handleRequest(request, mockedContext);
     assertTrue(response != null);
 
     List<FinanceProjection.PaymentAccumulator> accumulatedPayements = response.getRefinanceLoanProjection();

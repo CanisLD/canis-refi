@@ -6,12 +6,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RefinanceProjectionResponse {
 
+  @JsonProperty("httpStatusCode")
+  private final int httpStatusCode;
+
   @JsonProperty("currentLoanProjection")
   private final List<FinanceProjection.PaymentAccumulator> currentLoanProjection;
 
   @JsonProperty("refinanceLoanProjection")
   private final List<FinanceProjection.PaymentAccumulator> refinanceLoanProjection;
 
+  public int getHttpStatusCode() {
+    return httpStatusCode;
+  }
   public List<FinanceProjection.PaymentAccumulator> getCurrentLoanProjection() {
     return currentLoanProjection;
   }
@@ -19,14 +25,20 @@ public class RefinanceProjectionResponse {
     return refinanceLoanProjection;
   }
   private RefinanceProjectionResponse(Builder builder) {
+    this.httpStatusCode = builder.httpStatusCode;
     this.currentLoanProjection = builder.currentLoanProjection;
     this.refinanceLoanProjection = builder.refinanceLoanProjection;
   }
 
   public static class Builder {
+    private int httpStatusCode;
     private List<FinanceProjection.PaymentAccumulator> currentLoanProjection;
     private List<FinanceProjection.PaymentAccumulator> refinanceLoanProjection;
 
+    public Builder httpStatusCode(int httpStatusCode) {
+      this.httpStatusCode = httpStatusCode;
+      return this;
+    } 
     public Builder currentLoanProjection(List<FinanceProjection.PaymentAccumulator> currentLoanProjection) {
       this.currentLoanProjection = currentLoanProjection;
       return this;

@@ -36,6 +36,14 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>2.28.2</version>    
+      <scope>test</scope>
+    </dependency>
+
     <!--  AWS -->
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
@@ -51,28 +59,11 @@
       <artifactId>aws-lambda-java-events</artifactId>
       <version>3.11.0</version>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-log4j2</artifactId>
-      <version>1.5.1</version>
-    </dependency>
-    -->
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-runtime-interface-client</artifactId>
       <version>2.1.1</version>
     </dependency>
-
-    <!--  Gson: Java to JSON conversion -->
-    <!--
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.9.1</version>
-      <scope>compile</scope>
-    </dependency>
-    -->
 
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
     <dependency>
@@ -84,116 +75,65 @@
   </dependencies>
 
   <build>
-    <!-- <pluginManagement> --><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom), needed to remove pluginManagement to allow shade to work on ubuntu. weird. -->
-      <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
-        <!--
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
-        -->
-        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
-        <!--
-        <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-        -->
+    <plugins>
+      <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+      </plugin>
+      <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.1</version>
+      </plugin>
 
-        <!-- mvn shade plugin for package -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>3.3.0</version>
-          <!--
-          <configuration>
-            <createDependencyReducedPom>false</createDependencyReducedPom>
-          </configuration>
-          -->
-          <executions>
-            <execution>
-              <phase>package</phase>
-              <goals>
-                <goal>shade</goal>
-              </goals>
-              <configuration>
-                <minimizeJar>true</minimizeJar>
-                
-                <!--
-                <filters>
-                  <filter>
-                    <artifact>com.fasterxml.jackson.core:jackson-annotations</artifact>
-                    <includes>
-                       <include>com/fasterxml/jackson/annotation/JsonProperty</include>
-                    </includes>
-                  </filter>
-                </filters>
-                -->
-                
-                <!--
-                <artifactSet>
-                  <includes>
-                    <include>com.fasterxml.jackson.core:jackson-annotations</include>
-                  </includes>
-                </artifactSet>
-                -->
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
+      <!-- mvn shade plugin for package -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
-        <!-- mvn dependency plugin for aws container deployment -->
-        
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.1.2</version>
-          <executions>
-            <execution>
-              <id>copy-dependencies</id>
-              <phase>package</phase>
-              <goals>
-                <goal>copy-dependencies</goal>
-              </goals>
-              <configuration>
-             
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        
+      <!-- mvn dependency plugin for aws container deployment -->
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+            
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
 
-      </plugins>
-    <!-- </pluginManagement> -->
+    </plugins>
   </build>
 </project>

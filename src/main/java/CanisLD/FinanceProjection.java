@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FinanceProjection {
 
+  public static final long MINIMUM_TAKE_NTH = 1L;
   public static final long DEFAULT_TAKE_NTH = 1L;
 
   /**
@@ -116,6 +117,11 @@ public class FinanceProjection {
 
   public static class Loan {
 
+    public enum ValidationStatusCode {
+      OK,
+      INVALID_VALUES,
+    }
+
     // name of this loan
     @JsonProperty("label")
     private String label;
@@ -172,6 +178,25 @@ public class FinanceProjection {
     }
     public LoanAmortization.Loan getLoanDetails() {
       return loanDetails;
+    }
+
+    public ValidationStatusCode validate() {
+      
+      if (label == null
+        || loanDetails == null
+        || start < 0
+        || end < 0
+        || start > end
+      ) {
+        return ValidationStatusCode.INVALID_VALUES;
+      }
+
+      switch (loanDetails.validate()) {
+        case INVALID_VALUES:
+          return ValidationStatusCode.INVALID_VALUES;
+        default:
+          return ValidationStatusCode.OK;
+      }
     }
 
     private Loan(Builder builder) {

@@ -3,29 +3,32 @@ package CanisLD;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import software.amazon.awssdk.http.HttpStatusCode;
 
-// import com.google.gson.Gson;
-// import com.google.gson.GsonBuilder;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class RefinanceProjectionHandler implements RequestHandler<RefinanceProjectionRequest, RefinanceProjectionResponse> {
-  
-  // private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-  
+   
   @Override
   public RefinanceProjectionResponse handleRequest(RefinanceProjectionRequest event, Context context)
   {
-    // LambdaLogger logger = context.getLogger();
-    // String response = "200 OK";
-    // // log execution details
-    // logger.log("ENVIRONMENT VARIABLES: " + gson.toJson(System.getenv()));
-    // logger.log("CONTEXT: " + gson.toJson(context));
-    // // process event
-    // logger.log("EVENT: " + gson.toJson(event));
-    // logger.log("EVENT TYPE: " + event.getClass());
+    final LambdaLogger logger = context.getLogger();
+    int httpStatusCode = HttpStatusCode.OK;
+
+    switch (event.validate()) {
+      case INVALID_VALUES:
+        logger.log("Invalid request values");
+        httpStatusCode = HttpStatusCode.BAD_REQUEST;
+        break;
+      default:
+        break;
+    }
+
+    if (httpStatusCode != HttpStatusCode.OK) {
+      return new RefinanceProjectionResponse.Builder()
+        .httpStatusCode(httpStatusCode)
+        .build();
+    }
 
     final List<FinanceProjection.Loan> withRefinanceLoans = List.of(
       event.getCurrentLoan(),
@@ -35,6 +38,7 @@ public class RefinanceProjectionHandler implements RequestHandler<RefinanceProje
 
     RefinanceProjectionResponse response = 
       new RefinanceProjectionResponse.Builder()
+        .httpStatusCode(httpStatusCode)
         .currentLoanProjection(projection.getProjectedPaymentAccumulationOnIndividualLoan(event.getCurrentLoan().getLabel(), event.getTakeNth()))
         .refinanceLoanProjection(projection.getProjectedPaymentAccumulation(event.getTakeNth()))
         .build();

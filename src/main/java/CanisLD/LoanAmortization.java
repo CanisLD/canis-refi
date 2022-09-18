@@ -102,6 +102,15 @@ public class LoanAmortization {
 
   public static class Loan {
 
+    public enum ValidationStatusCode {
+      OK,
+      INVALID_VALUES,
+    }
+    public static final double MINIMUM_INTEREST_RATE = 0.0;
+    public static final double MINIMUM_AMOUNT = 0.0;
+    public static final long MINIMUM_PAYMENT_FREQUENCY = 1L;
+    public static final long MINIMUM_NUMBER_OF_TERMS = 1L;
+
     @JsonProperty("interestRate")
     private double interestRate;
 
@@ -144,6 +153,18 @@ public class LoanAmortization {
     public long getNumberOfTems() {
       return numberOfTerms;
     }
+
+    public ValidationStatusCode validate() {
+      if (paymentFrequency <= MINIMUM_PAYMENT_FREQUENCY
+        || amount <= MINIMUM_AMOUNT
+        || numberOfTerms < MINIMUM_NUMBER_OF_TERMS
+        || interestRate <= MINIMUM_INTEREST_RATE
+      ) {
+        return ValidationStatusCode.INVALID_VALUES;
+      }
+      return ValidationStatusCode.OK;
+    }
+
     protected Loan(Builder builder) {
       interestRate = builder.interestRate;
       amount = builder.amount;

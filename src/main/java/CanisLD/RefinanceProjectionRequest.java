@@ -3,6 +3,11 @@ package CanisLD;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RefinanceProjectionRequest {
+
+  public static enum ValidationStatusCode {
+    OK,
+    INVALID_VALUES,
+  };
   
   @JsonProperty("currentLoan")
   private FinanceProjection.Loan currentLoan;
@@ -37,6 +42,31 @@ public class RefinanceProjectionRequest {
   }
   public long getTakeNth() {
     return takeNth;
+  }
+
+  public ValidationStatusCode validate() {
+    if (currentLoan == null 
+      || refinanceLoan == null
+      || takeNth < FinanceProjection.MINIMUM_TAKE_NTH
+    ) {
+      return ValidationStatusCode.INVALID_VALUES;
+    }
+
+    switch (currentLoan.validate()) {
+      case INVALID_VALUES:
+        return ValidationStatusCode.INVALID_VALUES;
+      default:
+        break;
+    }
+
+    switch (refinanceLoan.validate()) {
+      case INVALID_VALUES:
+        return ValidationStatusCode.INVALID_VALUES;
+      default:
+        break;
+    }
+
+    return ValidationStatusCode.OK;
   }
 
   private RefinanceProjectionRequest(Builder builder) {
